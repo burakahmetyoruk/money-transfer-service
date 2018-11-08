@@ -1,10 +1,13 @@
 package integration;
 
 
+import domain.H2DataBaseService;
 import domain.entity.Account;
 import domain.entity.Transfer;
 import domain.repository.AccountRepository;
+import domain.repository.AccountRepositoryImpl;
 import domain.repository.TransferRepository;
+import domain.repository.TransferRepositoryImpl;
 import exception.NegativeBalanceException;
 import model.transfer.TransferRequest;
 import model.transfer.TransferResponse;
@@ -14,6 +17,7 @@ import org.junit.Test;
 import service.TransferService;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -25,11 +29,12 @@ public class TransferServiceIT {
     private static final String TRANSFERRED_ACCOUNT_NAME = "transferredAccountName";
 
     private TransferService transferService = TransferService.of();
-    private AccountRepository accountRepository = AccountRepository.of();
-    private TransferRepository transferRepository = TransferRepository.of();
+    private AccountRepository accountRepository = AccountRepositoryImpl.of();
+    private TransferRepository transferRepository = TransferRepositoryImpl.of();
 
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
+        H2DataBaseService.init();
         Account transferrerAccount = new Account();
         transferrerAccount.setName(TRANSFERRER_ACCOUNT_NAME);
         transferrerAccount.setBalance(BigDecimal.valueOf(30));
@@ -42,7 +47,7 @@ public class TransferServiceIT {
     }
 
     @Test
-    public void should_transfer_money_one_account_to_another() {
+    public void should_transfer_money_one_account_to_another() throws SQLException {
         Optional<Account> transferrerAccount = accountRepository.findByName(TRANSFERRER_ACCOUNT_NAME);
         Optional<Account> transferredAccount = accountRepository.findByName(TRANSFERRED_ACCOUNT_NAME);
 
@@ -68,7 +73,7 @@ public class TransferServiceIT {
 
 
     @Test(expected = NegativeBalanceException.class)
-    public void should_not_transfer_money_when_transferrer_account_be_overdrawn() {
+    public void should_not_transfer_money_when_transferrer_account_be_overdrawn() throws SQLException {
         Optional<Account> transferrerAccount = accountRepository.findByName(TRANSFERRER_ACCOUNT_NAME);
         Optional<Account> transferredAccount = accountRepository.findByName(TRANSFERRED_ACCOUNT_NAME);
 
@@ -82,6 +87,7 @@ public class TransferServiceIT {
     public void tearDown() {
         transferRepository.deleteAll();
         accountRepository.deleteAll();
+        H2DataBaseService.drop();
     }
 
     private TransferRequest createTransferRequest(Account transferrer, Account transferred, BigDecimal amount) {

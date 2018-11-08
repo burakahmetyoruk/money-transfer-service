@@ -30,7 +30,7 @@ public class AccountController {
         return accountService.create(accountRequest);
     }
 
-    AccountResponse retrieve(String accountName) throws IOException, SQLException {
+    AccountResponse retrieve(String accountName) {
         return accountService.retrieve(accountName);
     }
 

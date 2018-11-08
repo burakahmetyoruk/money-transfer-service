@@ -1,8 +1,10 @@
 package service;
 
 
+import domain.H2DataBaseService;
 import domain.entity.Account;
 import domain.repository.AccountRepository;
+import domain.repository.AccountRepositoryImpl;
 import model.transfer.TransferRequest;
 import model.transfer.TransferResponse;
 import org.junit.After;
@@ -18,10 +20,11 @@ import static org.junit.Assert.assertNotNull;
 public class TransferServiceTest {
 
     private TransferService transferService = TransferService.of();
-    private AccountRepository accountRepository = AccountRepository.of();
+    private AccountRepository accountRepository = AccountRepositoryImpl.of();
 
     @Before
-    public void setup() {
+    public void setup() throws SQLException {
+        H2DataBaseService.init();
         String transferrerAccountName = "transferrerAccount";
         String transferredAccountName = "transferredAccount";
         Account transferrerAccount = new Account();
@@ -60,5 +63,6 @@ public class TransferServiceTest {
     @After
     public void tearDown() {
         accountRepository.deleteAll();
+        H2DataBaseService.drop();
     }
 }

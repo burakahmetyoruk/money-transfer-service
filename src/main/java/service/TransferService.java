@@ -3,6 +3,7 @@ package service;
 import domain.entity.Account;
 import domain.entity.Transfer;
 import domain.repository.TransferRepository;
+import domain.repository.TransferRepositoryImpl;
 import exception.NegativeBalanceException;
 import model.transfer.TransferRequest;
 import model.transfer.TransferResponse;
@@ -10,6 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
+import java.sql.SQLException;
+import java.util.Random;
 
 public class TransferService {
 
@@ -17,13 +20,13 @@ public class TransferService {
     private static final TransferService transferService = new TransferService();
 
     private final AccountService accountService;
-    private final TransferRepository transferRepository;
+    private final TransferRepository<Transfer> transferRepository;
 
     public static TransferService of() {
         return transferService;
     }
 
-    public TransferResponse transfer(TransferRequest transferRequest) {
+    public TransferResponse transfer(TransferRequest transferRequest) throws SQLException {
             //Retrieve Transferrer Account
             Account transferrerAccount = accountService.retrieveAccount(transferRequest.getTransferrerAccountName());
             //Retrieve TransferredAccount
@@ -37,7 +40,7 @@ public class TransferService {
     }
 
 
-    public TransferResponse saveTransfer(Account transferrerAccount, Account transferredAccount, final BigDecimal transferAmount) {
+    public TransferResponse saveTransfer(Account transferrerAccount, Account transferredAccount, final BigDecimal transferAmount) throws SQLException {
         //Account must not be overdrawn
         if (transferrerAccount.getBalance().compareTo(transferAmount) < 0) {
             logger.info("{} Balance must be bigger than Transfer Amount", transferrerAccount.getName());
@@ -49,12 +52,13 @@ public class TransferService {
                 transferredAccount.getName());
 
         transferrerAccount.setBalance(transferrerAccount.getBalance().subtract(transferAmount));
-        accountService.save(transferrerAccount);
+        accountService.update(transferrerAccount);
 
         transferredAccount.setBalance(transferredAccount.getBalance().add(transferAmount));
-        accountService.save(transferredAccount);
+        accountService.update(transferredAccount);
 
         Transfer transfer = new Transfer();
+        transfer.setId(new Random().nextLong());
         transfer.setTransferAmount(transferAmount);
         transfer.setTransferrer(transferrerAccount);
         transfer.setTransferred(transferredAccount);
@@ -69,6 +73,6 @@ public class TransferService {
 
     private TransferService() {
         this.accountService = AccountService.of();
-        this.transferRepository = TransferRepository.of();
+        this.transferRepository = TransferRepositoryImpl.of();
     }
 }

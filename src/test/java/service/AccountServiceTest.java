@@ -1,8 +1,11 @@
 package service;
 
+import domain.H2DataBaseService;
 import exception.AccountNotFoundException;
 import model.account.AccountRequest;
 import model.account.AccountResponse;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
@@ -16,6 +19,11 @@ import static org.junit.Assert.assertNotNull;
 public class AccountServiceTest {
 
     private AccountService accountService = AccountService.of();
+
+    @Before
+    public void setup() {
+        H2DataBaseService.init();
+    }
 
     @Test
     public void should_create_account_with_initial_balance() throws SQLException {
@@ -34,5 +42,10 @@ public class AccountServiceTest {
         String transferrerAccountName = "transferrerAccount";
 
         accountService.retrieve(transferrerAccountName);
+    }
+
+    @After
+    public void tearDown() {
+        H2DataBaseService.drop();
     }
 }
