@@ -4,6 +4,7 @@ import domain.entity.Account;
 import domain.entity.Transfer;
 import domain.repository.TransferRepository;
 import domain.repository.TransferRepositoryImpl;
+import exception.AccountsAreSameException;
 import exception.NegativeBalanceException;
 import model.transfer.TransferRequest;
 import model.transfer.TransferResponse;
@@ -27,20 +28,25 @@ public class TransferService {
     }
 
     public TransferResponse transfer(TransferRequest transferRequest) throws SQLException {
-            //Retrieve Transferrer Account
-            Account transferrerAccount = accountService.retrieveAccount(transferRequest.getTransferrerAccountName());
-            //Retrieve TransferredAccount
-            Account transferredAccount = accountService.retrieveAccount(transferRequest.getTransferredAccountName());
-            //Transfer Money
-            TransferResponse transferResponse = saveTransfer(transferrerAccount,
-                    transferredAccount,
-                    transferRequest.getTransferAmount());
-            logger.info("Transfer Successful From: {} To: {}", transferrerAccount.getName(), transferredAccount.getName());
-            return transferResponse;
+        //Retrieve Transferrer Account
+        Account transferrerAccount = accountService.retrieveAccount(transferRequest.getTransferrerAccountName());
+        //Retrieve TransferredAccount
+        Account transferredAccount = accountService.retrieveAccount(transferRequest.getTransferredAccountName());
+
+        //Check whether accounts are same
+        if (transferrerAccount.equals(transferredAccount)) {
+            throw new AccountsAreSameException();
+        }
+        //Transfer Money
+        TransferResponse transferResponse = saveTransfer(transferrerAccount,
+                transferredAccount,
+                transferRequest.getTransferAmount());
+        logger.info("Transfer Successful From: {} To: {}", transferrerAccount.getName(), transferredAccount.getName());
+        return transferResponse;
     }
 
 
-    public TransferResponse saveTransfer(Account transferrerAccount, Account transferredAccount, final BigDecimal transferAmount) throws SQLException {
+    TransferResponse saveTransfer(Account transferrerAccount, Account transferredAccount, final BigDecimal transferAmount) throws SQLException {
         //Account must not be overdrawn
         if (transferrerAccount.getBalance().compareTo(transferAmount) < 0) {
             logger.info("{} Balance must be bigger than Transfer Amount", transferrerAccount.getName());
@@ -58,7 +64,7 @@ public class TransferService {
         accountService.update(transferredAccount);
 
         Transfer transfer = new Transfer();
-        transfer.setId(new Random().nextLong());
+        transfer.setId(createId());
         transfer.setTransferAmount(transferAmount);
         transfer.setTransferrer(transferrerAccount);
         transfer.setTransferred(transferredAccount);
@@ -74,5 +80,9 @@ public class TransferService {
     private TransferService() {
         this.accountService = AccountService.of();
         this.transferRepository = TransferRepositoryImpl.of();
+    }
+
+    private long createId() {
+        return new Random().nextLong();
     }
 }

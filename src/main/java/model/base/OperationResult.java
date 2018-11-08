@@ -1,7 +1,6 @@
 package model.base;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,9 +10,7 @@ import lombok.Setter;
 @Setter
 public class OperationResult {
 
-    @JsonProperty(value = "return_code")
     private Integer returnCode;
 
-    @JsonProperty(value = "message")
     private String message;
 }

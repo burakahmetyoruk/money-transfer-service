@@ -71,7 +71,6 @@ public class TransferServiceIT {
     }
 
 
-
     @Test(expected = NegativeBalanceException.class)
     public void should_not_transfer_money_when_transferrer_account_be_overdrawn() throws SQLException {
         Optional<Account> transferrerAccount = accountRepository.findByName(TRANSFERRER_ACCOUNT_NAME);

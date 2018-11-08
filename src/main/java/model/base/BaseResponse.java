@@ -2,6 +2,7 @@ package model.base;
 
 
 public class BaseResponse {
+
     private OperationResult operationResult = new OperationResult(0, "Success");
 
     public BaseResponse() {

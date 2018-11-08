@@ -14,9 +14,9 @@ public class H2DataBaseService {
 
     public static void init() {
 
-        try (Connection connection = DriverManager.getConnection ("jdbc:h2:mem:test_mem;DB_CLOSE_DELAY=-1;", "","");) {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:test_mem;DB_CLOSE_DELAY=-1;", "", "");) {
             QueryRunner queryRunner = new QueryRunner();
-            
+
             String accountCreateQuery = "CREATE TABLE ACCOUNT (" +
                     "  ID bigint(20) NOT NULL PRIMARY KEY AUTO_INCREMENT," +
                     "  BALANCE decimal(19,2) NOT NULL," +
@@ -41,7 +41,7 @@ public class H2DataBaseService {
     }
 
     public static void drop() {
-        try (Connection connection = DriverManager.getConnection ("jdbc:h2:mem:test_mem;DB_CLOSE_DELAY=-1;", "","");) {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:test_mem;DB_CLOSE_DELAY=-1;", "", "");) {
             QueryRunner queryRunner = new QueryRunner();
 
             String accountDropQuery = "DROP TABLE ACCOUNT;";
@@ -55,6 +55,6 @@ public class H2DataBaseService {
     }
 
     public static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection ("jdbc:h2:mem:test_mem;IFEXISTS=TRUE;", "","");
+        return DriverManager.getConnection("jdbc:h2:mem:test_mem;IFEXISTS=TRUE;", "", "");
     }
 }

@@ -1,19 +1,17 @@
 package rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import exception.RequestNotValidException;
 import model.transfer.TransferRequest;
 import model.transfer.TransferResponse;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.TransferService;
 import spark.Request;
 import spark.Response;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
-public class TransferController {
+public class TransferController implements BaseController {
 
     private static final Logger logger = LoggerFactory.getLogger(TransferController.class);
     private static final TransferController transferController = new TransferController();
@@ -25,18 +23,10 @@ public class TransferController {
     }
 
     TransferResponse transfer(Request request, Response response) throws SQLException {
-        TransferRequest transferRequest = retrieveRequest(request);
-        return transferService.transfer(transferRequest);
-    }
-
-    private TransferRequest retrieveRequest(Request request) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(request.body(), TransferRequest.class);
-        } catch (IOException e) {
-            logger.error("Error Occurred When Parsing Request", e);
-            throw new RequestNotValidException();
-        }
+        TransferRequest transferRequest = retrieveRequest(request, TransferRequest.class);
+        final TransferResponse transfer = transferService.transfer(transferRequest);
+        response.status(HttpStatus.SC_CREATED);
+        return transfer;
     }
 
     private TransferController() {

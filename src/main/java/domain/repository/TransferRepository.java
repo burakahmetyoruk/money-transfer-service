@@ -8,6 +8,8 @@ import java.util.Optional;
 public interface TransferRepository<T> {
 
     void save(T t) throws SQLException;
+
     Optional<Transfer> findById(Long id);
+
     void deleteAll();
 }

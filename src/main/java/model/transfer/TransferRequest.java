@@ -1,18 +1,15 @@
 package model.transfer;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import model.BaseRequest;
 
 import java.math.BigDecimal;
 
-public class TransferRequest {
+public class TransferRequest implements BaseRequest {
 
-    @JsonProperty(value = "transferrer_account_name")
     private String transferrerAccountName;
 
-    @JsonProperty(value = "transferred_account_name")
     private String transferredAccountName;
 
-    @JsonProperty(value = "transfer_amount")
     private BigDecimal transferAmount;
 
     public String getTransferrerAccountName() {

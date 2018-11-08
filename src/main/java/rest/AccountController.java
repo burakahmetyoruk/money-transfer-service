@@ -1,20 +1,18 @@
 package rest;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import exception.RequestNotValidException;
 import model.account.AccountRequest;
 import model.account.AccountResponse;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.AccountService;
 import spark.Request;
 import spark.Response;
 
-import java.io.IOException;
 import java.sql.SQLException;
 
-public class AccountController {
+public class AccountController implements BaseController {
 
     private static Logger logger = LoggerFactory.getLogger(AccountController.class);
 
@@ -26,22 +24,14 @@ public class AccountController {
     }
 
     AccountResponse create(Request request, Response response) throws SQLException {
-        AccountRequest accountRequest = retrieveRequest(request);
-        return accountService.create(accountRequest);
+        AccountRequest accountRequest = retrieveRequest(request, AccountRequest.class);
+        AccountResponse accountResponse = accountService.create(accountRequest);
+        response.status(HttpStatus.SC_CREATED);
+        return accountResponse;
     }
 
     AccountResponse retrieve(String accountName) {
         return accountService.retrieve(accountName);
-    }
-
-    private AccountRequest retrieveRequest(Request request) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(request.body(), AccountRequest.class);
-        } catch (IOException e) {
-            logger.error("Error Occurred When Parsing Request", e);
-            throw new RequestNotValidException();
-        }
     }
 
     private AccountController() {

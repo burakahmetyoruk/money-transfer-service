@@ -1,6 +1,5 @@
 package exception.handler;
 
-import exception.AccountAlreadyExistException;
 import exception.AccountNotFoundException;
 import org.apache.http.HttpStatus;
 import spark.Request;

@@ -1,11 +1,10 @@
 package model.account;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import model.BaseRequest;
 
-public class AccountRequest {
+public class AccountRequest implements BaseRequest {
 
-    @JsonProperty(value = "account_name")
-    private String  accountName;
+    private String accountName;
 
     public String getAccountName() {
         return accountName;

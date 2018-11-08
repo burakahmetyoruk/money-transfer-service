@@ -1,24 +1,19 @@
 package model.transfer;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import model.base.BaseResponse;
 
 import java.math.BigDecimal;
 
 public class TransferResponse extends BaseResponse {
 
-    @JsonProperty(value = "transfer_id")
     private Long transferId;
 
     private Long created;
 
-    @JsonProperty(value = "transfer_amount")
     private BigDecimal transferAmount;
 
-    @JsonProperty(value = "transferrer_name")
     private String transferrerName;
 
-    @JsonProperty(value = "transferred_name")
     private String transferredName;
 
     public TransferResponse() {

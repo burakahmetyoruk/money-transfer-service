@@ -5,6 +5,7 @@ import domain.H2DataBaseService;
 import domain.entity.Account;
 import domain.repository.AccountRepository;
 import domain.repository.AccountRepositoryImpl;
+import exception.AccountsAreSameException;
 import model.transfer.TransferRequest;
 import model.transfer.TransferResponse;
 import org.junit.After;
@@ -58,6 +59,19 @@ public class TransferServiceTest {
         assertEquals(BigDecimal.TEN, transferResponse.getTransferAmount());
         assertEquals(transferrerAccountName, transferResponse.getTransferrerName());
         assertEquals(transferredAccountName, transferResponse.getTransferredName());
+    }
+
+    @Test(expected = AccountsAreSameException.class)
+    public void should_not_transfer_money_if_transferrer_and_transferred_are_same() throws SQLException {
+        String transferrerAccountName = "transferrerAccount";
+        String transferredAccountName = "transferrerAccount";
+
+        TransferRequest transferRequest = new TransferRequest();
+        transferRequest.setTransferrerAccountName(transferrerAccountName);
+        transferRequest.setTransferredAccountName(transferredAccountName);
+        transferRequest.setTransferAmount(BigDecimal.TEN);
+
+        TransferResponse transferResponse = transferService.transfer(transferRequest);
     }
 
     @After
